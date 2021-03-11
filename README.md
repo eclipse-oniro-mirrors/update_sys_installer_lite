@@ -1,39 +1,84 @@
-# update_ota_lite
+# OTA<a name="EN-US_TOPIC_0000001078451366"></a>
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+-   [Introduction](#section11660541593)
+-   [Directory Structure](#section1464106163817)
+-   [Constraints](#section1718733212019)
+-   [Usage](#section18867101215181)
+-   [Repositories Involved](#section68521336131912)
 
-#### 软件架构
-软件架构说明
+## Introduction<a name="section11660541593"></a>
+
+Over the Air \(OTA\) provides the remote device update capability. Your devices will be able to support OTA update after secondary development based on the provided APIs. By providing unified update APIs externally, the update subsystem shields the differences of underlying chips.
+
+## Directory Structure<a name="section1464106163817"></a>
+
+```
+/base/update/ota_lite
+├── frameworks        # OTA update implementation, including update package parsing, verification, writing, and updating
+│   └── test          # Self-test code
+│   └── unittest      # Unit test code
+│   └── source        # updater module source code
+│       └── updater   # updater module code
+│       └── verify    # Verification algorithm code
+├── interfaces
+│   └── kits          # External APIs for OTA update
+├── hals              # Chip adaptation code, for example, Hisilicon chip adaptation code is located at device\hisilicon\hardware\update
+```
+
+## Constraints<a name="section1718733212019"></a>
+
+The update subsystem is compiled using the C language. Currently, only the Hi3518EV300, Hi3516DV300, and Hi3861 development boards are supported. If you want to support devices that use other chips, you can implement the OpenHarmony integration APIs in the  **vendor**  directory. Currently, only the full-package update is supported.
+
+## Usage<a name="section18867101215181"></a>
+
+Add the dependency on the update subsystem. The following uses the Hi3516D V300 development board as an example.
+
+-   Add  **update**  to the  **subsystem\_list field in the vendor\\hisilicon\\ipcamera\_hi3516dv300\_liteos\\config.json**  file, and add the following code under  **subsystem\_list**:
+
+    ```
+    {
+            "subsystem": "update",
+            "components": [
+              { "component": "hota", "features": [] }
+            ]
+     },
+    ```
 
 
-#### 安装教程
+-   Add the  **update.json**  file to the  **build\\lite\\components**  directory.
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+    ```
+    "components": [
+        {
+          "component": "hota",
+          "description": "",
+          "optional": "false",
+          "dirs": [
+            "base/update/ota_lite/frameworks",
+            "base/update/ota_lite/interfaces/kits"
+          ],
+          "targets": [
+            "//base/update/ota_lite/frameworks:ota_lite"
+          ],
+    ...
+    ```
 
-#### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+-   Add test code. For example, add  **subsystem\_test**  to the  **base\\update\\ota\_lite\\frameworks\\BUILD.gn**  file.
 
-#### 参与贡献
+-   Run the following commands to compile the system. You can experience the OTA update function after flashing the system to the Hi3516 chip.
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+    ```
+    hb set
+    hb build
+    ```
 
 
-#### 特技
+## Repositories Involved<a name="section68521336131912"></a>
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+Update subsystem
+
+**update\_ota\_lite**
+
+hmf/device/hisilicon/hardware
+
