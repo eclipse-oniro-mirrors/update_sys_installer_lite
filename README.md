@@ -22,7 +22,7 @@ Over the Air \(OTA\) provides the remote device update capability. Your devices 
 │       └── verify    # Verification algorithm code
 ├── interfaces
 │   └── kits          # External APIs for OTA update
-├── hals              # Chip adaptation code, for example, Hisilicon chip adaptation code is located at device\hisilicon\hardware\update
+├── hals              # Chip adaptation code, for example, HiSilicon chip adaptation code is located at device\hisilicon\hardware\update
 ```
 
 ## Constraints<a name="section1718733212019"></a>
@@ -76,9 +76,9 @@ Add the dependency on the update subsystem. The following uses the Hi3516D V300 
 
 ## Repositories Involved<a name="section68521336131912"></a>
 
-Update subsystem
+[Update subsystem](https://gitee.com/openharmony/docs/blob/master/en/readme/update.md)
 
 **update\_ota\_lite**
 
-hmf/device/hisilicon/hardware
+[device\_hisilicon\_hardware](https://gitee.com/openharmony/device_hisilicon_hardware/blob/master/README.md)
 
