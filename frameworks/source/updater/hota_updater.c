@@ -208,17 +208,15 @@ static int CheckPkgVersionValid(const char *pkgVersion)
     if (pkgVersion == NULL) {
         return OHOS_FAILURE;
     }
-    char *currentVersion = GetIncrementalVersion();
+    const char *currentVersion = GetIncrementalVersion();
     if (currentVersion == NULL) {
         return OHOS_FAILURE;
     }
 
     if (!IsLatestVersion(pkgVersion, currentVersion)) {
         printf("pkgVersion is valid\r\n");
-        free(currentVersion);
         return OHOS_FAILURE;
     }
-    free(currentVersion);
     return OHOS_SUCCESS;
 }
 
