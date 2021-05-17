@@ -178,6 +178,58 @@ int HotaSetBootSettings(void);
  */
 int HotaRestart(void);
 
+/**
+ * @brief get update ability.
+ *
+ * You need to call this function when update process init. \n
+ *
+ * @return Returns update abilty.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaGetUpdateAbility(void);
+
+/**
+ * @brief get ota package update path.
+ *
+ * You need to call this function before update process. \n
+ * 
+ * @param path Indicates where ota package you place.
+ * @param len Indicates  path len.
+ *
+ * @return Returns <b>0</b> if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaGetOtaPkgPath(char *path, int len);
+
+/**
+ * @brief judge deivce can auto update.
+ *
+ * You need to call this function when update process init.\n
+ *
+ * @return Returns <b>1</b> if device can auto update; returns <b>0</b> if device can not auto update.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int IsDeviceCanAutoUpdate(void);
+
+/**
+ * @brief get update status.
+ *
+ * You need to call this function when update process .\n
+ *
+ * @return Returns UpdateStatus if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalGetUpdateStatus(void);
+
+
 #ifdef __cplusplus
 #if __cplusplus
 }
