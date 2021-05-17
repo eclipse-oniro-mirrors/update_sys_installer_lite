@@ -55,7 +55,7 @@ if (ohos_kernel_type == "liteos_m") {
       "$ohos_third_party_dir/mbedtls/include",
       "$ohos_third_party_dir/lwip_sack/include",
     ]
-    cflags = [ "-Wno-unused-variable" ]
+    cflags = [ "-Wno-unused-variable", "-DDYNAMIC_LOAD_HAL" ]
     deps = [ "//base/startup/syspara_lite/frameworks/parameter/src:sysparam" ]
     ldflags = [ "-lhal_update" ]
     deps += [ "$ohos_vendor_adapter_dir/update:hal_update" ]
