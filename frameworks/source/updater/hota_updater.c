@@ -657,7 +657,7 @@ int HotaGetOtaPkgPath(char *path, int len)
     return HotaHalGetOtaPkgPath(path, len);
 }
 
-int IsDeviceCanReboot(void)
+int HotaIsDeviceCanReboot(void)
 {
     return HotaHalIsDeviceCanReboot();
 }
@@ -668,3 +668,13 @@ int HotaGetUpdateStatus(void)
     HotaHalGetMetaData(&data);   
     return data.updateStatus ? 1 : 0;
 }
+
+int HotaRebootAndCleanUserData(void)
+{
+	return HotaHalRebootAndCleanUserData();
+}
+
+int HotaRebootAndCleanCache(void)
+{
+	return HotaHalRebootAndCleanCache();
+} 

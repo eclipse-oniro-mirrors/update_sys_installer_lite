@@ -206,7 +206,7 @@ int HotaGetUpdateAbility(void);
 int HotaGetOtaPkgPath(char *path, int len);
 
 /**
- * @brief judge deivce can auto update.
+ * @brief judge deivce can auto reboot.
  *
  * You need to call this function when update process init.\n
  *
@@ -215,7 +215,7 @@ int HotaGetOtaPkgPath(char *path, int len);
  * @since 1.0
  * @version 1.0
  */
-int IsDeviceCanAutoUpdate(void);
+int HotaIsDeviceCanReboot(void);
 
 /**
  * @brief get update status.
@@ -228,6 +228,30 @@ int IsDeviceCanAutoUpdate(void);
  * @version 1.0
  */
 int HotaHalGetUpdateStatus(void);
+
+/**
+ * @brief reboot and clean userdata.
+ *
+ * You need to call this function when update process .\n
+ *
+ * @return Returns UpdateStatus if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaRebootAndCleanUserData(void);
+
+/**
+ * @brief reboot and clean cache.
+ *
+ * You need to call this function when update process .\n
+ *
+ * @return Returns UpdateStatus if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaRebootAndCleanCache(void);
 
 
 #ifdef __cplusplus
