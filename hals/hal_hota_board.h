@@ -187,6 +187,29 @@ int HotaHalGetMetaData(UpdateMetaData *metaData);
  */
 int HotaHalSetMetaData(UpdateMetaData *metaData);
 
+/**
+ * @brief reboot and clean userdata.
+ *
+ * You need to call this function when recovery system.\n
+ *
+ * @return Returns <b>0</b> if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalRebootAndCleanUserData(void);
+
+/**
+ * @brief reboot and clean cache.
+ *
+ * You need to call this function when recovery system.\n
+ *
+ * @return Returns <b>0</b> if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalRebootAndCleanCache(void);
 
 #ifdef __cplusplus
 #if __cplusplus

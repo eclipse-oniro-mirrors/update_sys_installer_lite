@@ -30,7 +30,7 @@
 #define PKG_VERSION_LENGTH 64
 #define PRODUCT_ID_LENGTH 64
 
-#define OTA_MAX_PARTITION_NUM 6
+#define OTA_MAX_PARTITION_NUM 10
 #define COMPONENT_INFO_START 176
 #define COMPONENT_INFO_TYPE_SIZE 2
 #define COMPONENT_INFO_HEADER_LENGTH 4
@@ -123,7 +123,8 @@ static void UpdateStatus(HotaStatus status)
         return;
     }
 
-    if (status == HOTA_CANCELED || status == HOTA_FAILED) {
+    if (status == HOTA_CANCELED || status == HOTA_FAILED || 
+        status == HOTA_TRANSPORT_ALL_DONE) {
         if (g_infoCompBuff != NULL) {
             free(g_infoCompBuff);
             g_infoCompBuff = NULL;
@@ -200,17 +201,15 @@ static int CheckPkgVersionValid(const char *pkgVersion)
     if (pkgVersion == NULL) {
         return OHOS_FAILURE;
     }
-    char *currentVersion = GetIncrementalVersion();
+    const char *currentVersion = GetIncrementalVersion();
     if (currentVersion == NULL) {
         return OHOS_FAILURE;
     }
 
     if (!IsLatestVersion(pkgVersion, currentVersion)) {
         printf("pkgVersion is valid\r\n");
-        free(currentVersion);
         return OHOS_FAILURE;
     }
-    free(currentVersion);
     return OHOS_SUCCESS;
 }
 
@@ -657,7 +656,7 @@ int HotaGetOtaPkgPath(char *path, int len)
     return HotaHalGetOtaPkgPath(path, len);
 }
 
-int IsDeviceCanReboot(void)
+int HotaIsDeviceCanReboot(void)
 {
     return HotaHalIsDeviceCanReboot();
 }
@@ -668,3 +667,13 @@ int HotaGetUpdateStatus(void)
     HotaHalGetMetaData(&data);   
     return data.updateStatus ? 1 : 0;
 }
+
+int HotaRebootAndCleanUserData(void)
+{
+    return HotaHalRebootAndCleanUserData();
+}
+
+int HotaRebootAndCleanCache(void)
+{
+    return HotaHalRebootAndCleanCache();
+} 
