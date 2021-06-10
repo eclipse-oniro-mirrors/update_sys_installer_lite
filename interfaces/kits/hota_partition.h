@@ -52,11 +52,11 @@ typedef struct {
 } ComponentTableInfo;
 
 typedef struct {
-    unsigned char updateMode;  
+    unsigned char updateMode;
     unsigned char runningPartition;
     unsigned char updatePartition;
-    unsigned char runningStatus; 
-    unsigned char otaStatus;  
+    unsigned char runningStatus;
+    unsigned char otaStatus;
     unsigned char rebootStatus;
     unsigned char updateStatus;
 } UpdateMetaData;
