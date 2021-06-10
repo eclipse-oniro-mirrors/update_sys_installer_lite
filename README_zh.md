@@ -76,9 +76,9 @@ OTA（Over the Air）提供对设备远程升级能力，基于提供的接口�
 
 ## 相关仓<a name="section68521336131912"></a>
 
-升级服务子系统
+[升级服务子系统](https://gitee.com/openharmony/docs/blob/master/zh-cn/readme/%E5%8D%87%E7%BA%A7%E6%9C%8D%E5%8A%A1%E5%AD%90%E7%B3%BB%E7%BB%9F.md)
 
 **update\_ota\_lite**
 
-hmf/device/hisilicon/hardware
+[device\_hisilicon\_hardware](https://gitee.com/openharmony/device_hisilicon_hardware)
 

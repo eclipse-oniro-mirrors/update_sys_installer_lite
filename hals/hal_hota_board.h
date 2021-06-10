@@ -59,7 +59,7 @@ int HotaHalGetUpdateIndex(unsigned int *index);
  * @return OHOS_SUCCESS: Success,
  *         Others: Failure.
  */
-int HotaHalWrite(HotaPartition partition, unsigned char *buffer, unsigned int offset, unsigned int bufLen);
+int HotaHalWrite(int partition, unsigned char *buffer, unsigned int offset, unsigned int bufLen);
 
 /**
  * @brief read image of partition.
@@ -72,7 +72,7 @@ int HotaHalWrite(HotaPartition partition, unsigned char *buffer, unsigned int of
  * @return OHOS_SUCCESS: Success,
  *         Others: Failure.
  */
-int HotaHalRead(HotaPartition partition, unsigned int offset, unsigned int bufLen, unsigned char *buffer);
+int HotaHalRead(int partition, unsigned int offset, unsigned int bufLen, unsigned char *buffer);
 
 /**
  * @brief Write Boot Settings in order to notify device upgrade success or enter Recovery Part.
@@ -97,6 +97,119 @@ int HotaHalRestart(void);
  *         Others: Failure.
  */
 int HotaHalRollback(void);
+
+/**
+ * @brief Get partition info.
+ *
+ * You need to call this funtion in Init function, you need partition info when upgrade. \n
+ *
+ * @return Returns <b>0</b> if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+const ComponentTableInfo *HotaHalGetPartitionInfo();
+
+/**
+ * @brief Get public key.
+ *
+ * You need to call this funtion when verfiy sign data \n
+ *
+ * @param length Indicates  pubkey len.
+ *
+ * @return Returns <b>0</b> if the operation is successful; public key.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+unsigned char *HotaHalGetPubKey(unsigned int *length);
+
+/**
+ * @brief get update ability.
+ *
+ * You need to call this function when update process init. \n
+ *
+ * @return Returns update abilty.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalGetUpdateAbility(void);
+
+/**
+ * @brief get ota package update path.
+ *
+ * You need to call this function before update process. \n
+ * 
+ * @param path Indicates where ota package you place.
+ * @param len Indicates  path len.
+ *
+ * @return Returns <b>0</b> if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalGetOtaPkgPath(char *path, int len);
+
+/**
+ * @brief judge deivce can auto update.
+ *
+ * You need to call this function when update process init.\n
+ *
+ * @return Returns <b>1</b> if device can auto update; returns <b>0</b> if device can not auto update.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalIsDeviceCanReboot(void);
+
+/**
+ * @brief get update metadata.
+ *
+ * You need to call this function when update process .\n
+ *
+ * @return Returns OtaStatus if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalGetMetaData(UpdateMetaData *metaData);
+
+/**
+ * @brief set update metadata.
+ *
+ * You need to call this function when update process.\n
+ *
+ * @return Returns <b>0</b> if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalSetMetaData(UpdateMetaData *metaData);
+
+/**
+ * @brief reboot and clean userdata.
+ *
+ * You need to call this function when recovery system.\n
+ *
+ * @return Returns <b>0</b> if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalRebootAndCleanUserData(void);
+
+/**
+ * @brief reboot and clean cache.
+ *
+ * You need to call this function when recovery system.\n
+ *
+ * @return Returns <b>0</b> if the operation is successful; returns <b>-1</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalRebootAndCleanCache(void);
 
 #ifdef __cplusplus
 #if __cplusplus

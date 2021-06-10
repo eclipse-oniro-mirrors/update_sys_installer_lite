@@ -25,17 +25,17 @@
 #include "parameter.h"
 
 #define HASH_LENGTH 32
-#define SIGN_DATA_LEN 256
+#define SIGN_DATA_LEN 640
 #define COMP_VERSION_LENGTH 10
 #define PKG_VERSION_LENGTH 64
 #define PRODUCT_ID_LENGTH 64
 
-#define OTA_MAX_PARTITION_NUM 6
+#define OTA_MAX_PARTITION_NUM 10
 #define COMPONENT_INFO_START 176
 #define COMPONENT_INFO_TYPE_SIZE 2
 #define COMPONENT_INFO_HEADER_LENGTH 4
 
-#define MAX_BUFFER_SIZE 1024
+#define MAX_BUFFER_SIZE 1500
 #define MAX_TRANSPORT_BUFF_SIZE (4 * 1024)
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
@@ -97,18 +97,10 @@ static ComponentInfos g_componentInfos = { 0 };
 static HotaNotifier g_otaNotifier = { 0 };    /* OTA Notifier, notify caller when error or status changed */
 static unsigned int g_useDefaultPkgFlag = 1; /* Use default Pkg format flag. default use it. */
 static unsigned char *g_infoCompBuff = NULL;        /* info component buffer */
+static ComponentTableInfo *g_otaComponents = NULL;    /* ota partitions info */
+static unsigned int g_signDataLen = 0;    /* sign data len */
+static unsigned int g_signStartAddr = 0;  /* sign start address */ 
 
-static HotaPartitionDef g_otaPartitions[] = {
-    { "bootloader", PARTITION_BOOTLOADER },
-    { "kernel_A", PARTITION_KERNEL_A },
-    { "kernel_B", PARTITION_KERNEL_B },
-    { "rootfs", PARTITION_ROOTFS },
-    { "app", PARTITION_APP },
-    { "data", PARTITION_DATA },
-    { "config", PARTITION_OTA_CONFIG },
-    { "ota_tag", PARTITION_OTA_TAG },
-    { "rootfs_ext4", PARTITION_ROOTFS_EXT4 },
-};
 
 static void HotaResetStatus(void)
 {
@@ -131,7 +123,8 @@ static void UpdateStatus(HotaStatus status)
         return;
     }
 
-    if (status == HOTA_CANCELED || status == HOTA_FAILED) {
+    if (status == HOTA_CANCELED || status == HOTA_FAILED || 
+        status == HOTA_TRANSPORT_ALL_DONE) {
         if (g_infoCompBuff != NULL) {
             free(g_infoCompBuff);
             g_infoCompBuff = NULL;
@@ -208,33 +201,26 @@ static int CheckPkgVersionValid(const char *pkgVersion)
     if (pkgVersion == NULL) {
         return OHOS_FAILURE;
     }
-    char *currentVersion = GetIncrementalVersion();
+    const char *currentVersion = GetIncrementalVersion();
     if (currentVersion == NULL) {
         return OHOS_FAILURE;
     }
 
     if (!IsLatestVersion(pkgVersion, currentVersion)) {
         printf("pkgVersion is valid\r\n");
-        free(currentVersion);
         return OHOS_FAILURE;
     }
-    free(currentVersion);
     return OHOS_SUCCESS;
 }
 
 static int ParseHotaInfoComponent(unsigned char *infoCompBuffer, unsigned int bufLen)
 {
-    if (infoCompBuffer == NULL) {
+    if (infoCompBuffer == NULL || g_signDataLen == 0) {
         return OHOS_FAILURE;
     }
-	
-    unsigned char signBuf[SIGN_DATA_LEN] = {0};
+ 
     if (bufLen <= SIGN_DATA_LEN) {
         printf("buffLen is invalid.\r\n");
-        return OHOS_FAILURE;
-    }
-
-    if (memcpy_s(signBuf, SIGN_DATA_LEN, infoCompBuffer + (bufLen - SIGN_DATA_LEN), SIGN_DATA_LEN) != EOK) {
         return OHOS_FAILURE;
     }
 
@@ -248,7 +234,8 @@ static int ParseHotaInfoComponent(unsigned char *infoCompBuffer, unsigned int bu
         return OHOS_FAILURE;
     }
 
-    if (HotaSignVerify(infoHeaderBuf, bufLen - SIGN_DATA_LEN, signBuf, SIGN_DATA_LEN)) {
+    if (HotaSignVerify(infoHeaderBuf, bufLen - SIGN_DATA_LEN,
+        infoCompBuffer + (bufLen - g_signStartAddr), g_signDataLen)) {
         UpdateStatus(HOTA_FAILED);
         ReportErrorCode(HOTA_VERSION_INVALID);
         printf("Verify file failed.\r\n");
@@ -365,6 +352,13 @@ static int ProcessInfoCompHeader(const unsigned char *infoCompBuffer, unsigned i
         return OHOS_FAILURE;
     }
 
+    if (basicInfo.type == SIGN_ARITHMETIC_RSA2048) {
+        g_signDataLen = SIGN_RSA2048_LEN;
+        g_signStartAddr = SIGN_DATA_LEN;
+    } else if (basicInfo.type == SIGN_ARITHMETIC_RSA3072) {
+        g_signDataLen = SIGN_RSA3072_LEN;
+        g_signStartAddr = SIGN_RSA3072_LEN;
+    }
     g_infoCompAndSignSize = basicInfo.infoCompSize + SIGN_DATA_LEN;
     g_currentDloadComp.isInfoComp = true;
     g_currentDloadComp.offset = 0;
@@ -427,7 +421,7 @@ static int CopyToDloadCompBuffer(const unsigned char *buffer, unsigned int buffS
     return OHOS_SUCCESS;
 }
 
-static void GetCurrentDloadCompPartition(HotaPartition *partition)
+static void GetCurrentDloadCompPartition(int *partition)
 {
     if (g_currentDloadComp.index - 1 >= OTA_MAX_PARTITION_NUM) {
         UpdateStatus(HOTA_FAILED);
@@ -435,11 +429,11 @@ static void GetCurrentDloadCompPartition(HotaPartition *partition)
         return;
     }
 
-    for (unsigned int i = 0; i < ARRAY_SIZE(g_otaPartitions); i++) {
-        if (memcmp((unsigned char *)g_otaPartitions[i].partitionName,
+    for (unsigned int i = 0; g_otaComponents[i].imgPath != NULL; i++) {
+        if (strncmp((unsigned char *)(g_otaComponents[i].componentName),
             g_componentInfos.table[g_currentDloadComp.index - 1].addr,
             PARTITION_NAME_LENGTH) == 0) {
-            *partition = g_otaPartitions[i].partition;
+            *partition = g_otaComponents[i].id;
             return;
         }
     }
@@ -456,7 +450,7 @@ static int StashRecvDataToBuffer(unsigned char *buffer, unsigned int startAddr, 
             return OHOS_FAILURE;
         }
     } else {
-        HotaPartition partition = PARTITION_ERROR;
+        int partition = PARTITION_ERROR;
         GetCurrentDloadCompPartition(&partition);
         if (HotaHalWrite(partition, buffer, startAddr - g_currentDloadComp.offset,
             endAddr - startAddr) != OHOS_SUCCESS) {
@@ -585,6 +579,9 @@ int HotaInit(ErrorCallBackFunc errorCallback, StatusCallBackFunc statusCallback)
     if (g_infoCompBuff == NULL) {
         return OHOS_FAILURE;
     }
+
+    g_otaComponents = HotaHalGetPartitionInfo();
+  
     UpdateStatus(HOTA_INITED);
     return OHOS_SUCCESS;
 }
@@ -649,3 +646,34 @@ int HotaSetBootSettings(void)
     printf("HotaSetBootSettings run!\r\n");
     return HotaHalSetBootSettings();
 }
+int HotaGetUpdateAbility(void)
+{
+    return HotaHalGetUpdateAbility();
+}
+
+int HotaGetOtaPkgPath(char *path, int len)
+{
+    return HotaHalGetOtaPkgPath(path, len);
+}
+
+int HotaIsDeviceCanReboot(void)
+{
+    return HotaHalIsDeviceCanReboot();
+}
+
+int HotaGetUpdateStatus(void)
+{
+    UpdateMetaData data = {0};
+    HotaHalGetMetaData(&data);   
+    return data.updateStatus ? 1 : 0;
+}
+
+int HotaRebootAndCleanUserData(void)
+{
+    return HotaHalRebootAndCleanUserData();
+}
+
+int HotaRebootAndCleanCache(void)
+{
+    return HotaHalRebootAndCleanCache();
+} 
