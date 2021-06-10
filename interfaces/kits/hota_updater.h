@@ -194,7 +194,7 @@ int HotaGetUpdateAbility(void);
  * @brief get ota package update path.
  *
  * You need to call this function before update process. \n
- * 
+ *
  * @param path Indicates where ota package you place.
  * @param len Indicates  path len.
  *
