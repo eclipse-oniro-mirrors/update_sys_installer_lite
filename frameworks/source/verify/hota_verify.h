@@ -26,7 +26,6 @@ extern "C" {
 
 #define BUFFR_LENGTH            128
 #define HASH_LENGTH             32
-#define SIGN_DATA_LEN           256
 
 void HotaHashInit(void);
 

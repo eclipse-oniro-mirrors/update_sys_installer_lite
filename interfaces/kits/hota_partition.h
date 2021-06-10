@@ -25,27 +25,42 @@ extern "C" {
 #endif /* End of #ifdef __cplusplus */
 
 #define PARTITION_NAME_LENGTH   16
+#define PARTITION_ERROR         -1
+#define PARTITION_INFO_COMP     1    /* The info component of ota package. */
+#define SIGN_RSA2048_LEN       256
+#define SIGN_RSA3072_LEN       384
+
+#define ABILITY_DIFF_UPDATE      (0x1 << 0)
+#define ABILITY_PATCH_UPDATE     (0x1 << 1)
+#define ABILITY_PKG_SEARCH       (0x1 << 2)
+#define ABILITY_PKG_DLOAD        (0x1 << 3)
+#define ABILITY_UPDATE_AUTH      (0x1 << 4)
+#define ABILITY_AUTO_UPDATE      (0x1 << 5)
+#define ABILITY_FLOW_INSTALL     (0x1 << 6)
+#define ABILITY_AB_PART_INSTALL  (0x1 << 7)
 
 typedef enum {
-    PARTITION_ERROR = -1,
-    PARTITION_PASS_THROUGH = 0,
-    PARTITION_INFO_COMP = 1,  /* The info component of ota package. */
-    PARTITION_BOOTLOADER = 2,
-    PARTITION_KERNEL_A = 3,
-    PARTITION_KERNEL_B = 4,
-    PARTITION_ROOTFS = 5,
-    PARTITION_APP = 6,
-    PARTITION_DATA = 7,
-    PARTITION_OTA_TAG = 8,
-    PARTITION_OTA_CONFIG = 9,
-    PARTITION_ROOTFS_EXT4 = 10,
-    PARTITION_MAX
-} HotaPartition;
+    SIGN_ARITHMETIC_RSA2048 = 0x0001,
+    SIGN_ARITHMETIC_RSA3072 = 0x0011
+} HotaSignArithmetic;
 
 typedef struct {
-    char partitionName[PARTITION_NAME_LENGTH];
-    HotaPartition partition;
-} HotaPartitionDef;
+    int id;
+    const char *componentName;
+    const char *imgPath;
+    unsigned char abFlag;
+} ComponentTableInfo;
+
+typedef struct {
+    unsigned char updateMode;  
+    unsigned char runningPartition;
+    unsigned char updatePartition;
+    unsigned char runningStatus; 
+    unsigned char otaStatus;  
+    unsigned char rebootStatus;
+    unsigned char updateStatus;
+} UpdateMetaData;
+
 
 #ifdef __cplusplus
 #if __cplusplus
