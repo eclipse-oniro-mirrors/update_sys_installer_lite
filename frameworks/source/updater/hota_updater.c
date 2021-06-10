@@ -130,8 +130,12 @@ static void UpdateStatus(HotaStatus status)
             g_infoCompBuff = NULL;
         }
     }
-
+    
+    UpdateMetaData data = {0};
+    HotaHalGetMetaData(&data);
     g_otaStatus = status;
+    data.otaStatus = status;
+    HotaHalSetMetaData(&data);
     if (g_otaNotifier.StatusCallBackFunc != NULL) {
         g_otaNotifier.StatusCallBackFunc(status);
     }
@@ -328,7 +332,7 @@ static int ProcessInfoCompHeader(const unsigned char *infoCompBuffer, unsigned i
     if (infoCompBuffer == NULL) {
         return OHOS_FAILURE;
     }
-	
+
     if (bufLen < sizeof(PkgBasicInfo)) {
         UpdateStatus(HOTA_FAILED);
         printf("buffLen is illegal.\r\n");
@@ -596,7 +600,7 @@ int HotaRead(unsigned int offset, unsigned int bufLen, unsigned char *buf)
     if (g_useDefaultPkgFlag == NOT_USE_DEFAULT_PKG) {
         return HotaHalRead(0, offset, bufLen, buf);
     }
-	
+
     printf("UseOHOSPkgFlag is not open!");
     return OHOS_FAILURE;
 }
@@ -606,7 +610,7 @@ int HotaWrite(unsigned char *buffer, unsigned int offset, unsigned int buffSize)
     if (g_useDefaultPkgFlag == NOT_USE_DEFAULT_PKG) {
         return HotaHalWrite(0, buffer, offset, buffSize);
     } 
-	
+
     return HotaDefaultWrite(buffer, offset, buffSize);
 }
 
@@ -622,8 +626,9 @@ int HotaRestart(void)
     if (g_useDefaultPkgFlag == NOT_USE_DEFAULT_PKG) {
         return HotaHalRestart();
     }
-
-    if (g_otaStatus != HOTA_TRANSPORT_ALL_DONE) {
+    UpdateMetaData data = {0};
+    HotaHalGetMetaData(&data);
+    if (data.otaStatus != HOTA_TRANSPORT_ALL_DONE) {
         printf("HotaRestart, failed. ota is canceled or verify failed.\r\n");
         return OHOS_FAILURE;
     }
@@ -664,7 +669,7 @@ int HotaIsDeviceCanReboot(void)
 int HotaGetUpdateStatus(void)
 {
     UpdateMetaData data = {0};
-    HotaHalGetMetaData(&data);   
+    HotaHalGetMetaData(&data);
     return data.updateStatus ? 1 : 0;
 }
 
@@ -676,4 +681,4 @@ int HotaRebootAndCleanUserData(void)
 int HotaRebootAndCleanCache(void)
 {
     return HotaHalRebootAndCleanCache();
-} 
+}
