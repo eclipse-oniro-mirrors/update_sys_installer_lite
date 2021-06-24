@@ -164,6 +164,18 @@ int HotaHalGetOtaPkgPath(char *path, int len);
 int HotaHalIsDeviceCanReboot(void);
 
 /**
+ * @brief judge is develop mode now.
+ *
+ * You need to call this function to get develop mode.\n
+ *
+ * @return Returns <b>1</b> if device is develop mode; returns <b>0</b> if device is not develop mode.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalIsDevelopMode(void);
+
+/**
  * @brief get update metadata.
  *
  * You need to call this function when update process .\n
