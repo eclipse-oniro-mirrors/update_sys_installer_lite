@@ -666,6 +666,11 @@ int HotaIsDeviceCanReboot(void)
     return HotaHalIsDeviceCanReboot();
 }
 
+int HotaIsDevelopMode(void)
+{
+    return HotaHalIsDevelopMode();
+}
+
 int HotaGetUpdateStatus(void)
 {
     UpdateMetaData data = {0};

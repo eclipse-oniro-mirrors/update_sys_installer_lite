@@ -218,6 +218,18 @@ int HotaGetOtaPkgPath(char *path, int len);
 int HotaIsDeviceCanReboot(void);
 
 /**
+ * @brief judge is develop mode now.
+ *
+ * You need to call this function to get develop mode.\n
+ *
+ * @return Returns <b>1</b> if device is develop mode; returns <b>0</b> if device is not develop mode.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaIsDevelopMode(void);
+
+/**
  * @brief get update status.
  *
  * You need to call this function when update process .\n
@@ -227,7 +239,7 @@ int HotaIsDeviceCanReboot(void);
  * @since 1.0
  * @version 1.0
  */
-int HotaHalGetUpdateStatus(void);
+int HotaGetUpdateStatus(void);
 
 /**
  * @brief reboot and clean userdata.
