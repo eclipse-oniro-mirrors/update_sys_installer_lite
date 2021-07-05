@@ -26,7 +26,7 @@ ndk_lib("update_api") {
 
 subsystem_test("test") {
   test_components = []
-  if (board_name == "hi3518ev300") {
+  if (ohos_kernel_type != "liteos_m") {
     test_components +=
         [ "//base/update/ota_lite/frameworks/test/unittest/common:update_test" ]
   }
