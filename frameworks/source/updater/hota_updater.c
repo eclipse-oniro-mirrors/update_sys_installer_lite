@@ -184,7 +184,7 @@ static bool IsLatestVersion(const char *pkgVersion, const char *currentVersion)
                 isLatest = false;
                 break;
             } else if (atoi(pkgVerSplit) > atoi(currentVerSplit)) {
-            	isLatest = true;
+                isLatest = true;
                 break;
             }
         } else if (strncmp(pkgVerSplit, currentVerSplit, PKG_VERSION_LENGTH) != EOK) {
