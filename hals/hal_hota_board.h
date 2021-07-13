@@ -223,6 +223,18 @@ int HotaHalRebootAndCleanUserData(void);
  */
 int HotaHalRebootAndCleanCache(void);
 
+/**
+ * @brief check whether pkgVersion is valid.
+ *
+ * You need to call this function before update process.\n
+ *
+ * @return Returns <b>1</b> if pkgVersion is valid compared to currentVersion; returns <b>0</b> otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ */
+int HotaHalCheckVersionValid(const char *currentVersion, const char *pkgVersion, unsigned int pkgVersionLength);
+
 #ifdef __cplusplus
 #if __cplusplus
 }
