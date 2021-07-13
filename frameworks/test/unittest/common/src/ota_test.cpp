@@ -303,24 +303,24 @@ static int HotaCalcImageHash(uint8 *dataAddr, uint32 dataLen, uint8 *hash, uint3
 {
     AppSha256Context sha256;
     uint32 count;
-    
+
     if ((dataAddr == NULL) || (hash == NULL) || (dataLen == 0) || (hashLen < HASH_LENGTH)) {
         return -1;
     }
-    
+
     uint8 *dataBuff = dataAddr;
     if (memset_s(hash, hashLen, 0, hashLen) != EOK) {
         return -1;
     }
     AppSha256Init(&sha256);
-    
+
     while (dataLen > 0) {
         count = (dataLen > BUFFR_LENGTH) ? BUFFR_LENGTH : dataLen;
         AppSha256Update(&sha256, dataBuff, count);
         dataLen -= count;
         dataBuff += count;
     }
-    
+
     AppSha256Finish(&sha256, hash);
     return 0;
 }

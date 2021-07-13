@@ -99,7 +99,7 @@ static unsigned int g_useDefaultPkgFlag = 1; /* Use default Pkg format flag. def
 static unsigned char *g_infoCompBuff = NULL;        /* info component buffer */
 static ComponentTableInfo *g_otaComponents = NULL;    /* ota partitions info */
 static unsigned int g_signDataLen = 0;    /* sign data len */
-static unsigned int g_signStartAddr = 0;  /* sign start address */ 
+static unsigned int g_signStartAddr = 0;  /* sign start address */
 
 
 static void HotaResetStatus(void)
@@ -123,14 +123,14 @@ static void UpdateStatus(HotaStatus status)
         return;
     }
 
-    if (status == HOTA_CANCELED || status == HOTA_FAILED || 
+    if (status == HOTA_CANCELED || status == HOTA_FAILED ||
         status == HOTA_TRANSPORT_ALL_DONE) {
         if (g_infoCompBuff != NULL) {
             free(g_infoCompBuff);
             g_infoCompBuff = NULL;
         }
     }
-    
+
     UpdateMetaData data = {0};
     HotaHalGetMetaData(&data);
     g_otaStatus = status;
@@ -200,6 +200,10 @@ static bool IsLatestVersion(const char *pkgVersion, const char *currentVersion)
         isLatest = false;
     }
 
+    if (isLatest == false) {
+        isLatest = HotaHalCheckVersionValid(currentVersion, pkgVersion, PKG_VERSION_LENGTH) ? true : false;
+    }
+
     return isLatest;
 }
 
@@ -225,7 +229,7 @@ static int ParseHotaInfoComponent(unsigned char *infoCompBuffer, unsigned int bu
     if (infoCompBuffer == NULL || g_signDataLen == 0) {
         return OHOS_FAILURE;
     }
- 
+
     if (bufLen <= SIGN_DATA_LEN) {
         printf("buffLen is invalid.\r\n");
         return OHOS_FAILURE;
@@ -588,7 +592,7 @@ int HotaInit(ErrorCallBackFunc errorCallback, StatusCallBackFunc statusCallback)
     }
 
     g_otaComponents = HotaHalGetPartitionInfo();
-  
+
     UpdateStatus(HOTA_INITED);
     return OHOS_SUCCESS;
 }
@@ -612,7 +616,7 @@ int HotaWrite(unsigned char *buffer, unsigned int offset, unsigned int buffSize)
 {
     if (g_useDefaultPkgFlag == NOT_USE_DEFAULT_PKG) {
         return HotaHalWrite(0, buffer, offset, buffSize);
-    } 
+    }
 
     return HotaDefaultWrite(buffer, offset, buffSize);
 }
@@ -646,7 +650,9 @@ int HotaSetBootSettings(void)
         return HotaHalSetBootSettings();
     }
 
-    if (g_otaStatus != HOTA_TRANSPORT_ALL_DONE) {
+    UpdateMetaData data = {0};
+    HotaHalGetMetaData(&data);
+    if (data.otaStatus != HOTA_TRANSPORT_ALL_DONE) {
         printf("HotaSetBootSettings, failed. ota is canceled or verify failed.\r\n");
         return OHOS_FAILURE;
     }
