@@ -53,9 +53,12 @@ typedef enum {
 } HotaStatus;
 
 typedef enum {
+    HOTA_DATA_COMMON_ERR = 0,
     HOTA_DATA_WRITE_ERR = 1,
     HOTA_VERSION_INVALID = 2,
-    HOTA_DATA_SIGN_CHECK_ERR = 3
+    HOTA_DATA_SIGN_CHECK_ERR = 3,
+    HOTA_DATA_VERIFY_HASH_ERR = 4,
+    HOTA_DATA_COPY_TO_BUFFER_ERR = 5
 } HotaErrorCode;
 
 typedef void (*ErrorCallBackFunc)(HotaErrorCode errorCode);

@@ -248,7 +248,7 @@ static int ParseHotaInfoComponent(unsigned char *infoCompBuffer, unsigned int bu
     if (HotaSignVerify(infoHeaderBuf, bufLen - SIGN_DATA_LEN,
         infoCompBuffer + (bufLen - g_signStartAddr), g_signDataLen)) {
         UpdateStatus(HOTA_FAILED);
-        ReportErrorCode(HOTA_VERSION_INVALID);
+        ReportErrorCode(HOTA_DATA_SIGN_CHECK_ERR);
         printf("Verify file failed.\r\n");
         free(infoHeaderBuf);
         return OHOS_FAILURE;
@@ -321,6 +321,7 @@ static int ParseHotaComponent(void)
     // Check hash is or not same
     if (memcmp(hashOut, g_componentInfos.table[g_currentDloadComp.index - 1].shaData, HASH_LENGTH) != EOK) {
         UpdateStatus(HOTA_FAILED);
+        ReportErrorCode(HOTA_DATA_VERIFY_HASH_ERR);
         printf("Verify hash failed. package maybe be damaged!\r\n");
         return OHOS_FAILURE;
     }
@@ -359,6 +360,7 @@ static int ProcessInfoCompHeader(const unsigned char *infoCompBuffer, unsigned i
     // version check, only allow upgrade with higher version.
     if (CheckPkgVersionValid(basicInfo.version) != OHOS_SUCCESS) {
         UpdateStatus(HOTA_FAILED);
+        ReportErrorCode(HOTA_VERSION_INVALID);
         printf("CheckPkgVersionValid failed. Pkg version: %s\r\n", basicInfo.version);
         return OHOS_FAILURE;
     }
@@ -425,6 +427,7 @@ static int CopyToDloadCompBuffer(const unsigned char *buffer, unsigned int buffS
     if (memcpy_s(g_infoCompBuff + g_currentDloadComp.currentSize, MAX_BUFFER_SIZE - g_currentDloadComp.currentSize,
         buffer, buffSize) != EOK) {
         UpdateStatus(HOTA_FAILED);
+        ReportErrorCode(HOTA_DATA_COPY_TO_BUFFER_ERR);
         printf("memcpy_s g_infoCompBuff failed.\r\n");
         return OHOS_FAILURE;
     }
@@ -466,6 +469,7 @@ static int StashRecvDataToBuffer(unsigned char *buffer, unsigned int startAddr, 
         if (HotaHalWrite(partition, buffer, startAddr - g_currentDloadComp.offset,
             endAddr - startAddr) != OHOS_SUCCESS) {
             printf("StashRecvDataToBuffer HotaHalWrite failed, partition = %d .\r\n", partition);
+            ReportErrorCode(HOTA_DATA_WRITE_ERR);
             UpdateStatus(HOTA_FAILED);
             return OHOS_FAILURE;
         }
