@@ -33,9 +33,9 @@ unittest("update_test") {
     "//third_party/bounds_checking_function:libsec_shared",
   ]
   if (ohos_kernel_type == "liteos_m") {
-    deps += [ "$ohos_vendor_adapter_dir/hals/update:hal_update_static" ]
+    deps += [ "$ohos_board_adapter_dir/hals/update:hal_update_static" ]
   } else {
     ldflags = [ "-lhal_update" ]
-    deps += [ "$ohos_vendor_adapter_dir/update:hal_update" ]
+    deps += [ "$ohos_board_adapter_dir/update:hal_update" ]
   }
 }
