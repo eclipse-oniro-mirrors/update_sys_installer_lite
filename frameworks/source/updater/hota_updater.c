@@ -411,8 +411,8 @@ static int ProcessOneComponent(void)
     // download OK
     if (DloadIsDone()) {
         // done
-        HotaResetStatus();
         UpdateStatus(HOTA_TRANSPORT_ALL_DONE);
+        HotaResetStatus();
     }
 
     return OHOS_SUCCESS;
