@@ -357,7 +357,7 @@ HWTEST_F(OtaTest, interface_call_001, TestSize.Level4)
 }
 
 
-HWTEST_F(OtaTest, default_pkg_001, TestSize.Level1)
+HWTEST_F(OtaTest, default_pkg_001, TestSize.Level0)
 {
     EXPECT_EQ(0, HotaByDefaultPkg(true));
 }
