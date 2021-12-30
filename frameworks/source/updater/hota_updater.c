@@ -445,8 +445,8 @@ static void GetCurrentDloadCompPartition(int *partition)
     }
 
     for (unsigned int i = 0; g_otaComponents[i].imgPath != NULL; i++) {
-        if (strncmp((unsigned char *)(g_otaComponents[i].componentName),
-            g_componentInfos.table[g_currentDloadComp.index - 1].addr,
+        if (strncmp((const char *)(g_otaComponents[i].componentName),
+            (const char *)g_componentInfos.table[g_currentDloadComp.index - 1].addr,
             PARTITION_NAME_LENGTH) == 0) {
             *partition = g_otaComponents[i].id;
             return;
@@ -596,7 +596,7 @@ int HotaInit(ErrorCallBackFunc errorCallback, StatusCallBackFunc statusCallback)
         return OHOS_FAILURE;
     }
 
-    g_otaComponents = HotaHalGetPartitionInfo();
+    g_otaComponents = (ComponentTableInfo *)HotaHalGetPartitionInfo();
 
     UpdateStatus(HOTA_INITED);
     return OHOS_SUCCESS;
